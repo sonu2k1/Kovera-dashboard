@@ -1,16 +1,74 @@
-# React + Vite
+# Kovera Admin Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A complete admin dashboard frontend for the **Kovera** real estate platform — built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## 🚀 Live Preview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+<p align="center">
+  <a href="https://kovera-dashboard.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/▶%20Live%20Preview-Visit%20Demo-22c55e?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Preview" />
+  </a>
+</p>
 
-## React Compiler
+🔗 **https://kovera-dashboard.vercel.app/**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> **Login:** `admin@kovera.io` / `admin123`
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 🔐 Admin login with JWT authentication
+- 📊 Dashboard with KPI cards, Recharts visualizations & auto-refresh
+- 🔍 Global search with filters, debounce & keyword highlight
+- 👥 Users module — table, detail modal, status toggle
+- 🏢 Agents module — ratings, verification, grid/table view
+- 🏠 Properties module — type/location/price filters, grid & table toggle
+- 💼 Trades module — timeline view, status tracking, clickable parties
+- ⚙️ Settings — profile, notifications, security, dark/light theme
+- 🌙 Dark / ☀️ Light mode toggle (persisted)
+- 📱 Fully responsive (desktop-first, mobile overlay sidebar)
+
+## 🛠 Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| Framework | React 19 + Vite |
+| Styling | Tailwind CSS v4 |
+| Routing | React Router v6 |
+| Data Fetching | TanStack React Query |
+| HTTP Client | Axios |
+| Charts | Recharts |
+| Icons | Lucide React |
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── ui/          # Button, Badge, Card, Select, Modal, Skeleton...
+│   ├── common/      # StatCard, DataTable, ProtectedRoute, KoveraLogo
+│   └── layout/      # DashboardLayout, Sidebar, Header
+├── context/         # AuthContext, SidebarContext, ThemeContext
+├── pages/           # Dashboard, Search, Users, Agents, Properties, Trades, Settings
+├── routes/          # Centralized route config with lazy loading
+├── services/
+│   ├── api/         # Axios instance
+│   └── hooks/       # React Query hooks (useUsers, useAgents, etc.)
+└── lib/             # Utility functions (cn)
+```
+
+## 🚀 Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Production build
+npm run build
+```
+
+## 📄 License
+
+MIT
