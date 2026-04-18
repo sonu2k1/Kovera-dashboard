@@ -10,6 +10,10 @@ import {
   LogOut,
   ChevronLeft,
   X,
+  Heart,
+  Link2,
+  Share2,
+  UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/context/SidebarContext";
@@ -22,6 +26,13 @@ const mainNav = [
   { to: "/search", label: "Search", icon: Search },
   { to: "/users", label: "Users", icon: Users },
   { to: "/agents", label: "Agents", icon: UserCheck },
+];
+
+const analyticsNav = [
+  { to: "/engagement", label: "Engagement", icon: Heart },
+  { to: "/chains", label: "Chains", icon: Link2 },
+  { to: "/referrals", label: "Referrals", icon: Share2 },
+  { to: "/agent-analytics", label: "Agent Analytics", icon: UserCog },
 ];
 
 const managementNav = [
@@ -140,6 +151,7 @@ export function Sidebar() {
       {/* ── Navigation ── */}
       <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
         <NavGroup title="Overview" items={mainNav} collapsed={collapsed} onNavigate={handleNavigate} />
+        <NavGroup title="Analytics" items={analyticsNav} collapsed={collapsed} onNavigate={handleNavigate} />
         <NavGroup title="Management" items={managementNav} collapsed={collapsed} onNavigate={handleNavigate} />
         <NavGroup title="System" items={systemNav} collapsed={collapsed} onNavigate={handleNavigate} />
       </nav>

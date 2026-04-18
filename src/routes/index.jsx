@@ -15,6 +15,12 @@ const PropertiesPage = lazy(() => import("@/pages/Properties"));
 const TradesPage = lazy(() => import("@/pages/Trades"));
 const SettingsPage = lazy(() => import("@/pages/Settings"));
 
+/* ── NEW Analytics Pages ── */
+const EngagementPage = lazy(() => import("@/pages/Engagement"));
+const ChainsPage = lazy(() => import("@/pages/Chains"));
+const ReferralsPage = lazy(() => import("@/pages/Referrals"));
+const AgentAnalyticsPage = lazy(() => import("@/pages/AgentAnalytics"));
+
 /**
  * Centralized route configuration.
  * Add new routes here — they'll auto-register in App.jsx.
@@ -35,6 +41,11 @@ export const protectedRoutes = [
   { path: "properties", element: <PropertiesPage /> },
   { path: "trades", element: <TradesPage /> },
   { path: "settings", element: <SettingsPage /> },
+  /* ── Analytics sub-pages ── */
+  { path: "engagement", element: <EngagementPage /> },
+  { path: "chains", element: <ChainsPage /> },
+  { path: "referrals", element: <ReferralsPage /> },
+  { path: "agent-analytics", element: <AgentAnalyticsPage /> },
 ];
 
 /** Layout wrapper — ProtectedRoute guards the entire dashboard */
