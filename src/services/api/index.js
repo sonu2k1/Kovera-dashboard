@@ -24,18 +24,33 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor — handle 401 (auto-logout)
+// Response interceptor — error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("auth_user");
-      // Only redirect if not already on login page
+    const status = error.response?.status;
+
+    // 401 Unauthorized
+    if (status === 401) {
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
     }
+    
+    // 403 Forbidden
+    if (status === 403) {
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "error", title: "Access Denied", message: "You do not have permission for this action." }
+      }));
+    }
+
+    // 500 Server Error
+    if (status >= 500) {
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "error", title: "Server Error", message: "An unexpected error occurred." }
+      }));
+    }
+
     return Promise.reject(error);
   }
 );
@@ -54,6 +69,7 @@ export const usersAPI = {
   create: (data) => api.post("/users", data),
   update: (id, data) => api.put(`/users/${id}`, data),
   delete: (id) => api.delete(`/users/${id}`),
+  updateStatus: (id, status) => api.patch(`/users/${id}/status`, { status }),
 };
 
 // ===== Agents API =====
@@ -63,6 +79,7 @@ export const agentsAPI = {
   create: (data) => api.post("/agents", data),
   update: (id, data) => api.put(`/agents/${id}`, data),
   delete: (id) => api.delete(`/agents/${id}`),
+  verify: (id, status) => api.patch(`/agents/${id}/verify`, { status }),
 };
 
 // ===== Search API =====
@@ -93,6 +110,7 @@ export const propertiesAPI = {
   create: (data) => api.post("/properties", data),
   update: (id, data) => api.put(`/properties/${id}`, data),
   delete: (id) => api.delete(`/properties/${id}`),
+  updateStatus: (id, status) => api.patch(`/properties/${id}/status`, { status }),
 };
 
 // ===== Trades API =====

@@ -39,7 +39,7 @@ import {
   Eye,
   UserCog,
 } from "lucide-react";
-import { useAgents, useAgent } from "@/services/hooks/useAgents";
+import { useAgents, useAgent, useVerifyAgent } from "@/services/hooks/useAgents";
 
 /* ── Verification config ── */
 const VERIFICATION_CONFIG = {
@@ -102,6 +102,7 @@ function TableSkeleton({ rows = 6 }) {
    ══════════════════════════════════════════════════════════ */
 function AgentDetailModal({ agentId, onClose }) {
   const { data: agent, isLoading } = useAgent(agentId);
+  const verifyAgent = useVerifyAgent();
   const [tab, setTab] = useState("profile");
 
   if (!agentId) return null;
@@ -248,9 +249,23 @@ function AgentDetailModal({ agentId, onClose }) {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-2 p-5 border-t border-border">
-              <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
-              <Button size="sm"><Mail className="w-4 h-4" /> Contact Agent</Button>
+            <div className="flex items-center justify-between p-5 border-t border-border">
+              <div className="flex items-center gap-2">
+                {agent.verification === "Pending" ? (
+                  <>
+                    <Button variant="success" size="sm" onClick={() => verifyAgent.mutate({ id: agentId, status: "Verified" })}>Approve</Button>
+                    <Button variant="danger" size="sm" onClick={() => verifyAgent.mutate({ id: agentId, status: "Rejected" })}>Reject</Button>
+                  </>
+                ) : agent.verification === "Verified" ? (
+                  <Button variant="danger" size="sm" onClick={() => verifyAgent.mutate({ id: agentId, status: "Rejected" })}>Revoke Verification</Button>
+                ) : (
+                  <Button variant="success" size="sm" onClick={() => verifyAgent.mutate({ id: agentId, status: "Verified" })}>Verify</Button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
+                <Button size="sm"><Mail className="w-4 h-4" /> Contact</Button>
+              </div>
             </div>
           </>
         ) : (

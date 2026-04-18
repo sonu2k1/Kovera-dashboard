@@ -9,7 +9,7 @@ import {
   ArrowUpDown, ArrowUp, ArrowDown, LayoutGrid, List, Eye,
   DollarSign, ArrowLeftRight, User, Calendar, ImageIcon,
 } from "lucide-react";
-import { useProperties, useProperty, LOCATIONS } from "@/services/hooks/useProperties";
+import { useProperties, useProperty, useUpdatePropertyStatus, LOCATIONS } from "@/services/hooks/useProperties";
 
 /* ── Status badge map ── */
 const STATUS_VARIANT = { Active: "success", Pending: "warning", Sold: "info" };
@@ -53,6 +53,7 @@ function GridSkeleton({ count = 6 }) {
    ══════════════════════════════════════════════════════ */
 function PropertyDetailModal({ propertyId, onClose }) {
   const { data: prop, isLoading } = useProperty(propertyId);
+  const updateStatus = useUpdatePropertyStatus();
   const [tab, setTab] = useState("info");
   const [imgIdx, setImgIdx] = useState(0);
 
@@ -223,9 +224,24 @@ function PropertyDetailModal({ propertyId, onClose }) {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-2 p-5 border-t border-border">
-              <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
-              <Button size="sm"><Eye className="w-4 h-4" /> View Full Listing</Button>
+            <div className="flex items-center justify-between p-5 border-t border-border">
+              <div className="flex items-center gap-2">
+                <Select
+                  value={prop.status}
+                  onChange={(e) => updateStatus.mutate({ id: propertyId, status: e.target.value })}
+                  disabled={updateStatus.isLoading}
+                  className="w-32 bg-navy-900"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Sold">Sold</option>
+                  <option value="Hidden">Hidden</option>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
+                <Button size="sm"><Eye className="w-4 h-4" /> View Full Listing</Button>
+              </div>
             </div>
           </>
         ) : (

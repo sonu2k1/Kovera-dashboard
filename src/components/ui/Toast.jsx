@@ -97,6 +97,15 @@ export function ToastProvider({ children }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  // Listen for global custom events
+  useEffect(() => {
+    const handleGlobalToast = (e) => {
+      addToast(e.detail);
+    };
+    window.addEventListener("kovera:toast", handleGlobalToast);
+    return () => window.removeEventListener("kovera:toast", handleGlobalToast);
+  }, [addToast]);
+
   return (
     <ToastContext.Provider value={{ addToast, dismissToast }}>
       {children}

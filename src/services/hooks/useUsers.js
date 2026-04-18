@@ -139,16 +139,24 @@ export function useToggleUserStatus() {
   return useMutation({
     mutationFn: async ({ id, newStatus }) => {
       try {
-        const res = await usersAPI.update(id, { status: newStatus });
+        const res = await usersAPI.updateStatus(id, newStatus);
         return res.data;
-      } catch {
-        // Demo mode: just return success
-        return { id, status: newStatus };
+      } catch (err) {
+        if (!err.response) return { id, status: newStatus }; // Demo mode
+        throw err;
       }
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "success", title: "Success", message: `User status changed to ${variables.newStatus}` }
+      }));
     },
+    onError: () => {
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "error", title: "Error", message: "Failed to change user status" }
+      }));
+    }
   });
 }

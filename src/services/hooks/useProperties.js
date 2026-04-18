@@ -139,3 +139,36 @@ export function useProperty(id) {
 
 /** Unique location list for filter dropdown */
 export const LOCATIONS = [...new Set(DEMO_PROPERTIES.map((p) => p.location))].sort();
+
+/**
+ * Hook: update property status
+ */
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+export function useUpdatePropertyStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, status }) => {
+      try {
+        const res = await propertiesAPI.updateStatus(id, status);
+        return res.data;
+      } catch (err) {
+        if (!err.response) return { id, status }; // Demo mode
+        throw err;
+      }
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["properties"] });
+      queryClient.invalidateQueries({ queryKey: ["property"] });
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "success", title: "Success", message: `Property marked as ${variables.status}` }
+      }));
+    },
+    onError: () => {
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "error", title: "Error", message: "Failed to update property status" }
+      }));
+    }
+  });
+}

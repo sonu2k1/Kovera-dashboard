@@ -132,3 +132,36 @@ export function useAgent(id) {
     enabled: !!id,
   });
 }
+
+/**
+ * Hook: verify/reject agent status
+ */
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+export function useVerifyAgent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, status }) => {
+      try {
+        const res = await agentsAPI.verify(id, status);
+        return res.data;
+      } catch (err) {
+        if (!err.response) return { id, status }; // Demo mode
+        throw err;
+      }
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
+      queryClient.invalidateQueries({ queryKey: ["agent"] });
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "success", title: "Success", message: `Agent status updated to ${variables.status}` }
+      }));
+    },
+    onError: () => {
+      window.dispatchEvent(new CustomEvent("kovera:toast", {
+        detail: { type: "error", title: "Error", message: "Failed to verify agent" }
+      }));
+    }
+  });
+}
