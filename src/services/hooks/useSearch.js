@@ -78,7 +78,7 @@ export function useSearch({ query, type = "all", page = 1, limit = 20 }) {
       }
     },
     enabled: debouncedQuery.trim().length >= 1,
-    staleTime: 10 * 1000,
+    staleTime: 30 * 1000, // Cache for 30s per spec
     retry: 0,
   });
 

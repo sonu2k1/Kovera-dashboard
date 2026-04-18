@@ -10,3 +10,4 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
 export { Skeleton, SkeletonText, SkeletonCard, SkeletonTable, SkeletonAvatar } from "./Skeleton";
 export { SearchBar } from "./SearchBar";
 export { Modal } from "./Modal";
+export { ToastProvider, useToast } from "./Toast";

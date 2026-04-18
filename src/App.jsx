@@ -4,7 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { publicRoutes, layoutRoute, fallbackRoute } from "@/routes";
-import { Skeleton, SkeletonCard } from "@/components/ui";
+import { Skeleton, SkeletonCard, ToastProvider } from "@/components/ui";
+import { OfflineBanner } from "@/components/common";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,28 +47,31 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <BrowserRouter>
-          <AuthProvider>
-          <Suspense fallback={<PageSkeleton />}>
-            <Routes>
-              {/* Public routes */}
-              {publicRoutes.map((route) => (
-                <Route key={route.path} {...route} />
-              ))}
-
-              {/* Protected dashboard routes */}
-              <Route path={layoutRoute.path} element={layoutRoute.element}>
-                {layoutRoute.children.map((route, idx) => (
-                  <Route key={route.path || idx} {...route} />
+        <ToastProvider>
+          <OfflineBanner />
+          <BrowserRouter>
+            <AuthProvider>
+            <Suspense fallback={<PageSkeleton />}>
+              <Routes>
+                {/* Public routes */}
+                {publicRoutes.map((route) => (
+                  <Route key={route.path} {...route} />
                 ))}
-              </Route>
 
-              {/* Catch-all */}
-              <Route {...fallbackRoute} />
-            </Routes>
-          </Suspense>
-        </AuthProvider>
-      </BrowserRouter>
+                {/* Protected dashboard routes */}
+                <Route path={layoutRoute.path} element={layoutRoute.element}>
+                  {layoutRoute.children.map((route, idx) => (
+                    <Route key={route.path || idx} {...route} />
+                  ))}
+                </Route>
+
+                {/* Catch-all */}
+                <Route {...fallbackRoute} />
+              </Routes>
+            </Suspense>
+          </AuthProvider>
+        </BrowserRouter>
+        </ToastProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

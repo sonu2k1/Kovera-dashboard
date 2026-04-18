@@ -55,9 +55,11 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
-  const [token, setToken] = useState(() => localStorage.getItem("auth_token"));
+  // SECURITY SPEC: JWT must be stored in memory, NOT localStorage
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const logoutTimerRef = useRef(null);
+  const idleTimerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,8 +73,7 @@ export function AuthProvider({ children }) {
       logoutTimerRef.current = null;
     }
 
-    // Clear storage
-    localStorage.removeItem("auth_token");
+    // Clear storage/memory
     localStorage.removeItem("auth_user");
     setToken(null);
     setUser(null);
@@ -102,6 +103,36 @@ export function AuthProvider({ children }) {
     },
     [logout]
   );
+
+  /**
+   * Auto-logout after 30 minutes of inactivity.
+   * Resets on mouse movements, clicks, keypresses, scrolls.
+   */
+  const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+
+  const resetIdleTimer = useCallback(() => {
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      console.warn("[Auth] Idle timeout (30 min) — auto-logout");
+      logout();
+    }, IDLE_TIMEOUT_MS);
+  }, [logout]);
+
+  // Start idle tracking when user is authenticated
+  useEffect(() => {
+    if (!token) return;
+
+    const events = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
+    const handleActivity = () => resetIdleTimer();
+
+    events.forEach((e) => window.addEventListener(e, handleActivity, { passive: true }));
+    resetIdleTimer(); // Start the timer
+
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, handleActivity));
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, [token, resetIdleTimer]);
 
   /**
    * Validate existing token on mount.
@@ -166,8 +197,7 @@ export function AuthProvider({ children }) {
       const res = await authAPI.login({ email, password });
       const { token: jwt, user: userData } = res.data;
 
-      // Persist
-      localStorage.setItem("auth_token", jwt);
+      // Persist user (but NOT token, keep token in memory)
       localStorage.setItem("auth_user", JSON.stringify(userData));
       setToken(jwt);
       setUser(userData);
@@ -177,12 +207,11 @@ export function AuthProvider({ children }) {
 
       return { success: true };
     } catch (error) {
-      // ── Demo mode fallback (when API server is not running) ──
-      if (!error.response && email === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      // ── Demo mode fallback ──
+      if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
         const demoToken = "demo_jwt_token";
         const demoUser = { name: "Admin", email: DEMO_EMAIL, role: "admin" };
 
-        localStorage.setItem("auth_token", demoToken);
         localStorage.setItem("auth_user", JSON.stringify(demoUser));
         setToken(demoToken);
         setUser(demoUser);
