@@ -11,4 +11,14 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      // Forward all /api requests to the Kovera backend, bypassing CORS
+      '/api': {
+        target: 'https://app.kovera.io',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 })

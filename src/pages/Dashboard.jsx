@@ -149,6 +149,14 @@ function fmtNum(num) {
   return num.toLocaleString();
 }
 
+/** Safely compute like rate: liked / (liked + dismissed), capped at 100% */
+function safeLikeRate(swipeData) {
+  if (!swipeData) return 0;
+  const total = (swipeData.totalLiked || 0) + (swipeData.totalDismissed || 0);
+  if (total === 0) return 0;
+  return Math.min(((swipeData.totalLiked / total) * 100), 100).toFixed(2);
+}
+
 function fmtPct(pct) {
   if (pct == null) return "";
   const sign = pct >= 0 ? "+" : "";
@@ -571,12 +579,12 @@ export default function Dashboard() {
                 </div>
                 {/* Like Rate Progress */}
                 <div className="p-4 rounded-xl bg-navy-950 border border-border text-center">
-                  <p className="text-3xl font-bold text-primary">{swipe.likeRate}%</p>
+                  <p className="text-3xl font-bold text-primary">{safeLikeRate(swipe)}%</p>
                   <p className="text-xs text-muted mt-1">Like Rate</p>
                   <div className="w-full h-2 bg-navy-800 rounded-full mt-3 overflow-hidden">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-1000"
-                      style={{ width: `${swipe.likeRate}%` }}
+                      style={{ width: `${safeLikeRate(swipe)}%` }}
                     />
                   </div>
                 </div>

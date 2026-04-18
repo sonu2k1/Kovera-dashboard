@@ -75,6 +75,14 @@ function fmtNum(n) {
   return n.toLocaleString();
 }
 
+/** Safely compute like rate: liked / (liked + dismissed), capped at 100% */
+function safeLikeRate(swipeData) {
+  if (!swipeData) return 0;
+  const total = (swipeData.totalLiked || 0) + (swipeData.totalDismissed || 0);
+  if (total === 0) return 0;
+  return Math.min(((swipeData.totalLiked / total) * 100), 100).toFixed(2);
+}
+
 function weekLabel(iso) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
@@ -209,7 +217,7 @@ export default function EngagementPage() {
         />
         <StatCard
           title="Like Rate"
-          value={swipe ? `${swipe.likeRate}%` : "—"}
+          value={swipe ? `${safeLikeRate(swipe)}%` : "—"}
           icon={TrendingUp}
           accentColor="green"
         />
