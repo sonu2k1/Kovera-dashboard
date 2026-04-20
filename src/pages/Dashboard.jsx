@@ -268,7 +268,7 @@ export default function Dashboard() {
         icon: UserCog, accentColor: "purple",
       },
       {
-        key: "totalListings", title: "Total Listings", value: fmtNum(dash.totalListings),
+        key: "totalListings", title: "Total Properties", value: fmtNum(dash.totalListings),
         change: null, trend: "up",
         icon: Building2, accentColor: "green",
       },
